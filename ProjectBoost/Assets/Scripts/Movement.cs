@@ -12,7 +12,12 @@ using UnityEngine; //the namespace all the monobehavior content exists
 
 public class Movement : MonoBehaviour 
 {
-    Rigidbody playerRb; //Create a rigidbody object to store player rigidbody
+    //Create serialized fields
+    [SerializeField] float fltThrustSpeed = 1f;
+    [SerializeField] float fltRotateSpeed = 1f;
+
+    //Create object types
+    Rigidbody playerRb;
 
     // Start is called before the first frame update
     void Start()
@@ -27,7 +32,7 @@ public class Movement : MonoBehaviour
         GetRotation(); // Get the input from the user
     }
 
-    //Method responsible for rotation of the player
+    //Method responsible for determining if player should rotate
     void GetRotation()
     {
         //If player is pressing both rotate buttons, don't rotate
@@ -38,22 +43,38 @@ public class Movement : MonoBehaviour
         //Otherwise, if they're pressing the ccw rotation button, rotate ccw
         else if (Input.GetKey(KeyCode.A))
         {
-            Debug.Log("A button pressed (Rotate ccw)");
+            ApplyRotation(fltRotateSpeed);
         }
         //Otherwise, if they're pressing the cw rotation button, rotate cw
         else if (Input.GetKey(KeyCode.D))
         {
-            Debug.Log("D button pressed (Rotate cw)");
+            ApplyRotation(-fltRotateSpeed);
         }
     }
-    
+
+    //Method responsible for applying the rotation
+    void ApplyRotation(float rotateDirection)
+    {
+        //Freeze the physics rotation while rotating manually
+        playerRb.freezeRotation = true;
+
+        //Rotate object around z-axis
+        Vector3 rotateAmount = Vector3.forward * rotateDirection * Time.deltaTime;
+        transform.Rotate(rotateAmount);
+
+        //Stop freezing the physics rotation
+        playerRb.freezeRotation = false;
+    }
+
     //Method responsible for thrusting the player
     void GetThrust()
     {
         if (Input.GetKey(KeyCode.Space)) //Set KeyCode enumeration type to Space.
         {
             //F = ma, meaning a = F/m. Acceleration of object from force is dependent on amount of force & object's mass
-            playerRb.AddRelativeForce(Vector3.up); //Add force to rb relative to its own up direction (not world space)
+
+            Vector3 forceAmount = Vector3.up * fltThrustSpeed * Time.deltaTime; //Vector3.up is the object's relative up direction
+            playerRb.AddRelativeForce(forceAmount); //Add force to rb relative to its own direction (not world space)
         }
     }
 }
