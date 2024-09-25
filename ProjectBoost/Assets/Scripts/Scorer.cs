@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Scorer : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class Scorer : MonoBehaviour
     private void Start()
     {
         scoreText.text = intScore.ToString();
+        
     }
 
     private void OnTriggerEnter(Collider other)
